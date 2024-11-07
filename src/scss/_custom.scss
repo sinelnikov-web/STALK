@@ -1,1 +1,7 @@
 // Here you can add other styles
+
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+}
