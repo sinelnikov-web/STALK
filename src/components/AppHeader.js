@@ -189,7 +189,6 @@ const AppHeader = () => {
                           name="vacancy"
                           label="Vacancy description"
                           rows={10}
-                          value={vacancy}
                           text="Must be at least 100 words long."
                         ></CFormTextarea>
                       </CRow>
@@ -198,7 +197,6 @@ const AppHeader = () => {
                           id="cv"
                           name="cv"
                           label="Candidate CV"
-                          value={cv}
                           rows={10}
                           text="Must be at least 100 words long."
                         ></CFormTextarea>
