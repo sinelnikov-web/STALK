@@ -30,6 +30,10 @@ import {
   CInputGroupText,
   CFormLabel,
   CSpinner,
+  CToast,
+  CToastHeader,
+  CToastBody,
+  CToaster,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
@@ -58,6 +62,28 @@ const AppHeader = () => {
   const dispatch = useDispatch()
   const sidebarShow = useSelector((state) => state.sidebarShow)
 
+  const [toast, addToast] = useState(0)
+  const toaster = useRef()
+  const exampleToast = (
+    <CToast color="danger">
+      <CToastHeader closeButton>
+        <svg
+          className="rounded me-2"
+          width="20"
+          height="20"
+          xmlns="http://www.w3.org/2000/svg"
+          preserveAspectRatio="xMidYMid slice"
+          focusable="false"
+          role="img"
+        >
+          <rect width="100%" height="100%" fill="#ff0000"></rect>
+        </svg>
+        <div className="fw-bold me-auto">Введены невалидные данные</div>
+      </CToastHeader>
+      <CToastBody>Введите настоящую вакансию и резюме</CToastBody>
+    </CToast>
+  )
+
   const closeModal = () => !isLoading && setNewCandidateModalVisible(false)
   const openModal = () => setNewCandidateModalVisible(true)
 
@@ -79,14 +105,21 @@ const AppHeader = () => {
       },
     }
 
-    axios.post('http://195.54.32.63:8080/analyze-cv/', reqBody).then((res) => {
-      const { leetcode, codeforces, github, stepik } = reqBody.socials
-      res.data.username = github || leetcode || codeforces || stepik || `User #${users.length + 1}`
-      res.data.lastActivity = Date.now() + Math.random() * 10e5
-      dispatch({ type: 'add-user', user: res.data })
-      setIsLoading(false)
-      closeModal()
-    })
+    axios
+      .post('http://195.54.32.63:8080/analyze-cv/', reqBody)
+      .then((res) => {
+        const { leetcode, codeforces, github, stepik } = reqBody.socials
+        res.data.username =
+          github || leetcode || codeforces || stepik || `User #${users.length + 1}`
+        res.data.lastActivity = Date.now() + Math.random() * 10e5
+        dispatch({ type: 'add-user', user: res.data })
+        setIsLoading(false)
+        closeModal()
+      })
+      .catch(() => {
+        addToast(exampleToast)
+        setIsLoading(false)
+      })
   }
 
   useEffect(() => {
@@ -174,7 +207,7 @@ const AppHeader = () => {
                         </CCol>
                         <CInputGroupText id="basic-addon1">@</CInputGroupText>
                         <CFormInput
-                          placeholder="Stepik username"
+                          placeholder="Codeforces username"
                           id="codeforces"
                           name="codeforces"
                           aria-label="Codeforces username"
@@ -293,6 +326,7 @@ const AppHeader = () => {
       <CContainer className="px-4" fluid>
         <AppBreadcrumb />
       </CContainer>
+      <CToaster className="p-3" placement="top-end" push={toast} ref={toaster} />
     </CHeader>
   )
 }
